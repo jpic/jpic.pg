@@ -13,3 +13,4 @@
 - pg_replication_slot: name={{ pg_replication_slot_name }}
   sudo: yes
   sudo_user: '{{ pg_user }}'
+  when: not pg_bdr_path

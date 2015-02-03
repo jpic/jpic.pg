@@ -1,0 +1,4 @@
+{{ pg_log_path }} {
+   copytruncate
+   missingok
+}

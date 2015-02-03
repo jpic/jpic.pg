@@ -3,6 +3,7 @@
 - include: user.yml
 - include: install.yml
 - include: initdb.yml
+
 - include: master.yml
   when: ansible_hostname == pg_master
 - include: slave.yml

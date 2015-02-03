@@ -16,3 +16,5 @@ pg_max_wal_senders: 3
 pg_max_replication_slots: 3
 pg_hot_standby: 'on'
 pg_replication_slot_name: standby_replication_slot
+
+pg_bdr_path: false
