@@ -1,0 +1,15 @@
+---
+
+- shell: "{{ pg_initdb }} --auth-host=md5 --auth-local=peer -A trust --locale {{ pg_locale }} -D '{{ pg_data }}'"
+  sudo: yes
+  sudo_user: '{{ pg_user }}'
+  when: not pg_conf_stat.stat.exists
+  notify: pg reload
+
+- include: configure.yml
+
+- meta: flush_handlers
+
+- pg_replication_slot: name={{ pg_replication_slot_name }}
+  sudo: yes
+  sudo_user: '{{ pg_user }}'

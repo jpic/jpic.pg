@@ -1,0 +1,4 @@
+---
+
+- pacman: name=postgresql,python2-systemd,python2-psycopg2 state=installed
+  sudo: yes

@@ -1,0 +1,18 @@
+---
+
+pg_locale: en_US.UTF-8
+pg_timezone: UTC
+pg_initdb: 'initdb'
+pg_group: postgres
+pg_group_id: 88
+pg_user: postgres
+pg_user_id: 88
+pg_user_home: /var/lib/postgres
+pg_data: '{{ pg_user_home }}/data'
+pg_conf: '{{ pg_data }}/postgresql.conf'
+pg_listen_addresses: '*'
+pg_wal_level: logical
+pg_max_wal_senders: 3
+pg_max_replication_slots: 3
+pg_hot_standby: 'on'
+pg_replication_slot_name: standby_replication_slot

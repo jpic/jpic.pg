@@ -1,0 +1,16 @@
+---
+
+- locale_gen: name={{ pg_locale }} state=present
+  sudo: yes
+
+- file: 
+    path: '{{ pg_data }}'
+    state: directory
+    owner: '{{ pg_user }}'
+    group: '{{ pg_group }}'
+    mode: 0700
+  sudo: yes
+
+- stat: path='{{ pg_conf }}'
+  register: pg_conf_stat
+  sudo: yes

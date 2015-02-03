@@ -1,0 +1,20 @@
+---
+- hosts: pg
+  roles:
+  - role: jpic.pacman
+    pacman_mirrors:
+    - http://arch.yourlabs.org/
+
+  - role: .
+    pg_ssl_cert: 'server.crt'
+    pg_ssl_key: 'server.key'
+    pg_listen_addresses: '*'
+    pg_wal_level: logical
+    pg_max_wal_senders: 3
+    pg_max_replication_slots: 3
+    pg_hot_standby: 'on'
+    pg_master: pg1
+    pg_master_ip: 172.12.16.101
+    pg_hba:
+    - host replication postgres 172.12.16.101/32 trust
+    - host replication postgres 172.12.16.102/32 trust

@@ -1,0 +1,17 @@
+---
+
+- shell: pg_basebackup -P -R -X stream -c fast -h {{ pg_master_ip }} -U {{ pg_user }} -D {{ pg_data }}
+  sudo: yes
+  sudo_user: '{{ pg_user }}'
+  when: not pg_conf_stat.stat.exists
+  notify: pg reload
+
+- lineinfile:
+    dest: '{{ pg_data }}/recovery.conf'
+    line: primary_slot_name = '{{ pg_replication_slot_name }}'
+    regexp: ^primary_slot_name = .*$
+    insertafter: EOF
+  sudo: yes
+  notify: pg reload
+
+- meta: flush_handlers

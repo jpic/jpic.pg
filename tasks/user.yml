@@ -1,0 +1,15 @@
+---
+
+- group: 
+    name: '{{ pg_group }}' 
+    gid: '{{ pg_group_id }}'
+    state: present
+  sudo: yes
+
+- user: 
+    name: '{{ pg_user }}' 
+    uid: '{{ pg_user_id }}' 
+    home: '{{ pg_user_home }}'
+    group: '{{ pg_group }}'
+    state: present
+  sudo: yes
