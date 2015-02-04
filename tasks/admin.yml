@@ -1,0 +1,33 @@
+---
+
+- name: PostgreSQL | Make sure the PostgreSQL users are present
+  postgresql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.pass | default('pass')}}"
+    state: present
+  sudo: yes
+  sudo_user: "{{ pg_user }}"
+  with_items: pg_users
+  notify: pg reload
+
+- name: PostgreSQL | Make sure the PostgreSQL databases are present
+  postgresql_db:
+    name: "{{ item.name }}"
+    owner: "{{ pg_user }}"
+    state: present
+  sudo: yes
+  sudo_user: "{{ pg_user }}"
+  with_items: pg_databases
+  notify: pg reload
+
+- meta: flush_handlers
+
+- name: PostgreSQL | Update the user privileges
+  postgresql_user:
+    user: "{{ item.user }}"
+    db: "{{ item.db }}"
+    priv: "{{ item.priv | default('ALL') }}"
+    state: present
+  sudo: yes
+  sudo_user: "{{ pg_user }}"
+  with_items: pg_privileges

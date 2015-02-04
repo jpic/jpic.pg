@@ -1,4 +1,12 @@
 ---
+pg_master: false
+pg_bdr_path: false
+pg_run_path: /run/postgresql
+pg_log_path: /var/log/postgresql.log
+
+pg_databases: []
+pg_users: []
+pg_privileges: []
 
 pg_locale: en_US.UTF-8
 pg_timezone: UTC
@@ -9,6 +17,8 @@ pg_user: postgres
 pg_user_id: 88
 pg_user_home: /var/lib/postgres
 pg_data: '{{ pg_user_home }}/data'
+
+pg_pid: '{{ pg_data }}/postmaster.pid'
 pg_conf: '{{ pg_data }}/postgresql.conf'
 pg_listen_addresses: '*'
 pg_wal_level: logical
@@ -16,5 +26,13 @@ pg_max_wal_senders: 3
 pg_max_replication_slots: 3
 pg_hot_standby: 'on'
 pg_replication_slot_name: standby_replication_slot
-
-pg_bdr_path: false
+pg_ssl_cert_file: '{{ pg_data }}/server.crt'
+pg_ssl_key_file: '{{ pg_data }}/server.key'
+pg_max_worker_processes: 10
+pg_log_error_verbosity: verbose
+pg_log_min_messages: debug1
+pg_log_line_prefix: 'd=%d p=%p a=%a%q '
+pg_shared_preload_libraries: ''
+pg_track_commit_timestamp: ''
+pg_bdr_default_apply_delay: ''
+pg_bdr_log_conflicts_to_table: ''

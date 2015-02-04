@@ -14,3 +14,15 @@
 - stat: path='{{ pg_conf }}'
   register: pg_conf_stat
   sudo: yes
+
+- shell: "{{ pg_initdb }} --auth-host=md5 --auth-local=peer -A trust --locale {{ pg_locale }} -D '{{ pg_data }}'"
+  sudo: yes
+  sudo_user: '{{ pg_user }}'
+  when: not pg_conf_stat.stat.exists and not pg_type == 'slave'
+  notify: pg reload
+
+- shell: pg_basebackup -P -R -X stream -c fast -h {{ pg_master_ip }} -U {{ pg_user }} -D {{ pg_data }}
+  sudo: yes
+  sudo_user: '{{ pg_user }}'
+  when: not pg_conf_stat.stat.exists and pg_type == 'slave'
+  notify: pg reload

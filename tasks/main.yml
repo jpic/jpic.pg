@@ -1,10 +1,38 @@
 ---
 
+# Let's define the kind of setup we are doing
+- set_fact: pg_type=master
+  when: ansible_hostname == pg_master and not pg_bdr_path
+
+- set_fact: pg_type=slave
+  when: not ansible_hostname == pg_master and not pg_bdr_path
+
+- set_fact: pg_type=bdr
+  when: not not pg_bdr_path
+
+# Ensure the postgresql user exists
 - include: user.yml
+
+# Install bdr from source or simple postgresql package
 - include: install.yml
+  when: pg_type != 'bdr'
+
+- include: install_bdr.yml
+  when: pg_type == 'bdr'
+
+# Ensure the datadir exists
 - include: initdb.yml
 
-- include: master.yml
-  when: ansible_hostname == pg_master
-- include: slave.yml
-  when: not ansible_hostname == pg_master
+- include: configure.yml
+
+# Setup replication
+- include: replication.yml
+  when: pg_type != 'bdr'
+
+- meta: flush_handlers
+
+- include: admin.yml
+  when: pg_type != 'slave'
+
+- include: bdr.yml
+  when: pg_type != 'bdr'

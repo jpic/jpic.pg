@@ -1,0 +1,15 @@
+---
+
+- pg_replication_slot: name={{ pg_replication_slot_name }}
+  sudo: yes
+  sudo_user: '{{ pg_user }}'
+  when: pg_type == 'master'
+
+- lineinfile:
+    dest: '{{ pg_data }}/recovery.conf'
+    line: primary_slot_name = '{{ pg_replication_slot_name }}'
+    regexp: ^primary_slot_name = .*$
+    insertafter: EOF
+  sudo: yes
+  notify: pg reload
+  when: pg_type == 'slave'

@@ -1,11 +1,4 @@
 ---
 
-- pacman: name=postgresql state=installed
-  sudo: yes
-  when: not pg_bdr_path
-
-- include: bdr.yml
-  when: not not pg_bdr_path
-
-- pacman: name=python2-systemd,python2-psycopg2 state=installed
+- pacman: name=postgresql,python2-systemd,python2-psycopg2 state=installed
   sudo: yes
