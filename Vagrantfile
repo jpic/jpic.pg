@@ -16,11 +16,8 @@ Vagrant.configure(2) do |config|
           ansible.playbook = "Vagrantplaybook.yml"
           ansible.groups = {
               'pg' => ["pg1", "pg2"],
-              'pg_master' => ["pg1"],
-              'pg_slave' => ["pg2"],
           }
           ansible.extra_vars = {
-              pg_master_ip: '172.12.16.101',
               pg_master: 'pg1',
               pg_hot_standby: 'on',
               pg_hba: [
@@ -40,17 +37,11 @@ Vagrant.configure(2) do |config|
 
       config.vm.provision "ansible" do |ansible|
           ansible.playbook = "Vagrantplaybook.yml"
+          ansible.verbose = 'vvvv'
           ansible.groups = {
               'pg' => ["bdr1", "bdr2"],
-              'pg_master' => ["bdr1"],
-              'pg_slave' => ["bdr2"],
           }
           ansible.extra_vars = {
-              pg_hba: [
-                'host replication postgres 172.12.17.101/32 trust',
-                'host replication postgres 172.12.17.102/32 trust',
-              ],
-              pg_bdr_initiator: 'bdr1',
               pg_bdr_path: "/home/vagrant/bdr",
               pg_track_commit_timestamp: 'on',
               pg_shared_preload_libraries: 'bdr',

@@ -1,12 +1,24 @@
 ---
+
 - hosts: pg
   roles:
+  - role: soplakanets.hosts
+    save_hosts:
+    - name: pg1
+      ip: 172.12.16.101
+    - name: pg2
+      ip: 172.12.16.102
+    - name: bdr1
+      ip: 172.12.17.101
+    - name: bdr2
+      ip: 172.12.17.102
+
   - role: jpic.pacman
     pacman_mirrors:
     - http://arch.yourlabs.org/
 
   - role: .
-    pg_ssl: 'on'
+    pg_ssl: 'off'
     pg_ssl_cert_path: server.crt
     pg_ssl_key_path: server.key
     pg_users:
@@ -18,3 +30,19 @@
     - user: testuser
       db: testdb
       priv: all
+    pg_replication:
+    - name: bdr1testdb
+      dsn:
+        dbname: testdb 
+        user: postgres 
+        host: bdr1
+      master_for:
+      - host: bdr2
+        local_dsn:
+          dbname: testdb
+          user: postgres
+    - name: bdr2testdb
+      dsn:
+        dbname: testdb 
+        user: postgres 
+        host: bdr2
