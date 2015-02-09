@@ -1,5 +1,9 @@
 ---
 
+- name: PostgreSQL | Is server started
+  service: name=postgresql state=started enabled=yes
+  sudo: yes
+
 - name: PostgreSQL | Make sure the PostgreSQL users are present
   postgresql_user:
     name: "{{ item.name }}"
