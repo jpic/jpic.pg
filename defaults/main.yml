@@ -8,7 +8,7 @@ pg_databases: []
 pg_users: []
 pg_privileges: []
 
-pg_locale: en_US.UTF-8
+pg_locale: en_AU.UTF-8
 pg_timezone: UTC
 pg_initdb: 'initdb'
 pg_group: postgres
