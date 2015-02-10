@@ -1,17 +1,21 @@
-Role Name
-=========
+jpic.pg
+=======
 
-A brief description of the role goes here.
+This ansible role is able to compile and setup postgresql with bdr patches for
+killer bi directionnal multi master replication.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Although I use Arch Linux, it should be easy to add support for bloatware
+distros because this role does not rely on distro-specific patches and scripts.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Required variables:
+
+- ``pg_ips``: dict of hostname: ip for each postgresql node.
 
 Dependencies
 ------------
@@ -21,31 +25,44 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Example setup with replication::
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+  - role: jpic.pg
+    pg_bdr_path: /tmp/bdr
+    pg_track_commit_timestamp: 'on'
+    pg_shared_preload_libraries: 'bdr'
+    pg_bdr_default_apply_delay: 2000
+    pg_bdr_log_conflicts_to_table: 'on'
+    pg_ips:
+      bdr1: 172.12.17.101
+      bdr2: 172.12.17.102
+    pg_users:
+    - name: testuser
+      pass: testpass
+    pg_databases:
+    - name: testdb
+    pg_privileges:
+    - user: testuser
+      db: testdb
+      priv: all
+    pg_replication:
+    - name: bdr1testdb
+      dsn:
+        dbname: testdb 
+        user: postgres 
+        host: bdr1
+      master_for:
+      - host: bdr2
+        local_dsn:
+          dbname: testdb
+          user: postgres
+    - name: bdr2testdb
+      dsn:
+        dbname: testdb 
+        user: postgres 
+        host: bdr2
 
 License
 -------
 
 BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
-
-
-failed: [bdr1] => {"changed": true, "cmd": "initdb --auth-host=md5 --auth-local=peer -A trust --locale en_US.UTF-8 -D '/var/lib/postgres/data'", "delta": "0:00:00.022247", "end": "2015-02-07 00:03:36.553004", "rc": 1, "start": "2015-02-07 00:03:36.530757", "warnings": []}
-stderr: initdb: invalid locale name "en_US.UTF-8"
-stdout: The files belonging to this database system will be owned by user "postgres".
-This user must also own the server process.
-
-This is because the locale_gen module is broken with ArchLinux because of:
-
-- https://github.com/ansible/ansible-modules-extras/pull/221
-- https://github.com/ansible/ansible-modules-extras/pull/224
-
-You need to apply those patches in ansible-modules-extras.
