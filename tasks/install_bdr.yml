@@ -12,7 +12,7 @@
 - stat: path={{ pg_bdr_src }}/Makefile
   register: pg_bdr_makefile
 
-- shell: git clone -b bdr-pg/REL9_4_STABLE git://git.postgresql.org/git/2ndquadrant_bdr.git {{ pg_bdr_src }}
+- shell: git clone -b bdr-pg/REL9_4_STABLE {{ pg_bdr_git_src }} {{ pg_bdr_src }}
   when: not pg_bdr_makefile.stat.exists
 
 - copy: src=postgresql-run-socket.patch dest={{ pg_bdr_src }}
@@ -62,7 +62,7 @@
 - stat: path={{ pg_bdr_extension_src }}/configure
   register: pg_bdr_extension_configure
 
-- shell: git clone -b bdr-plugin/stable git://git.postgresql.org/git/2ndquadrant_bdr.git {{ pg_bdr_extension_src }}
+- shell: git clone -b bdr-plugin/stable {{ pg_bdr_git_src }} {{ pg_bdr_extension_src }}
   when: not pg_bdr_extension_configure.stat.exists
 
 - shell: PATH=$HOME/bdr/bin:$PATH ./configure --enable-bdr=yes chdir={{ pg_bdr_extension_src }}

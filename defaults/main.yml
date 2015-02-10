@@ -3,6 +3,7 @@ pg_master: false
 pg_bdr_path: false
 pg_run_path: /run/postgresql
 pg_log_path: /var/log/postgresql.log
+pg_bdr_git_src: git://git.postgresql.org/git/2ndquadrant_bdr.gi
 
 pg_databases: []
 pg_users: []
