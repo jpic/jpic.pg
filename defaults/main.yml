@@ -30,8 +30,10 @@ pg_replication_slot_name: standby_replication_slot
 pg_ssl_cert_file: '{{ pg_data }}/server.crt'
 pg_ssl_key_file: '{{ pg_data }}/server.key'
 pg_max_worker_processes: 10
+pg_client_min_messages: notice
 pg_log_error_verbosity: verbose
-pg_log_min_messages: debug1
+pg_log_min_messages: notice
+pg_log_min_error_statement: notice
 pg_log_line_prefix: 'd=%d p=%p a=%a%q '
 pg_shared_preload_libraries: ''
 pg_track_commit_timestamp: ''
