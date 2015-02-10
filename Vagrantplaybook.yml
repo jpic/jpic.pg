@@ -17,14 +17,27 @@
     pacman_mirrors:
     - http://arch.yourlabs.org/
 
+  - role: franklinkim.openssl
+    sudo: yes
+    openssl_self_signed:
+    - name: postgres
+      country: FR
+      state: IDF
+      city: Paris
+      organization: postgres
+      unit: postgres
+      email: postgres@localhost
+      days: 3650
+
   - role: .
     pg_bdr_git_src: /vagrant/_bdr
     pg_ips:
       bdr1: 172.12.17.101
       bdr2: 172.12.17.102
-    pg_ssl: 'off'
-    pg_ssl_cert_path: server.crt
-    pg_ssl_key_path: server.key
+    pg_ssl: 'on'
+    pg_ssl_cert_file: /etc/ssl/certs/postgres.crt
+    pg_ssl_ca_file: /etc/ssl/certs/postgres.crt
+    pg_ssl_key_file: /etc/ssl/private/postgres.key
     pg_users:
     - name: testuser
       pass: testpass

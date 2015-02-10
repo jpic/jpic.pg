@@ -1,19 +1,17 @@
 ---
 
-- name: upload ssl certificates
+- name: secure ssl certificates
   sudo: yes
-  sudo_user: '{{ pg_user }}'
-  copy: 
-    src: '{{ item.src }}' 
-    dest: '{{ item.dest }}'
+  file: 
+    path: '{{ item }}' 
     owner: '{{ pg_user }}'
     group: '{{ pg_group }}'
-    mode: 0700
+    mode: 0600
   with_items:
-  - src: '{{ pg_ssl_cert_path }}'
-    dest: '{{ pg_ssl_cert_file }}'
-  - src: '{{ pg_ssl_key_path }}'
-    dest: '{{ pg_ssl_key_file }}'
+  - '{{ pg_ssl_cert_file }}'
+  - '{{ pg_ssl_key_file }}'
+  - '{{ pg_ssl_ca_file }}'
+  notify: pg restart
 
 - name: setup conf files
   sudo: yes
