@@ -36,6 +36,7 @@
       priv: all
     pg_replication:
     - name: bdr1testdb
+      auth_method: trust
       dsn:
         dbname: testdb 
         user: postgres 
@@ -46,6 +47,7 @@
           dbname: testdb
           user: postgres
     - name: bdr2testdb
+      auth_method: trust
       dsn:
         dbname: testdb 
         user: postgres 

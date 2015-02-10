@@ -47,6 +47,7 @@ Example setup with replication::
       priv: all
     pg_replication:
     - name: bdr1testdb
+      auth_method: trust
       dsn:
         dbname: testdb 
         user: postgres 
@@ -57,6 +58,7 @@ Example setup with replication::
           dbname: testdb
           user: postgres
     - name: bdr2testdb
+      auth_method: trust
       dsn:
         dbname: testdb 
         user: postgres 
