@@ -1,5 +1,13 @@
 ---
 
+- hosts: localhost
+  connection: local
+  tasks:
+  - shell: git clone git://git.postgresql.org/git/2ndquadrant_bdr.git _bdr
+    ignore_errors: yes
+  - shell: git fetch origin bdr-pg/REL9_4_STABLE chdir=_bdr
+  - shell: git fetch origin bdr-plugin/stable chdir=_bdr
+
 - hosts: pg
   roles:
   - role: soplakanets.hosts
