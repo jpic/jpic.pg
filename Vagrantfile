@@ -20,10 +20,6 @@ Vagrant.configure(2) do |config|
           ansible.extra_vars = {
               pg_master: 'pg1',
               pg_hot_standby: 'on',
-              pg_hba: [
-                'host replication postgres 172.12.16.101/32 trust',
-                'host replication postgres 172.12.16.102/32 trust',
-              ],
           }
       end
     end
