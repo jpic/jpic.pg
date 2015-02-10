@@ -8,21 +8,25 @@
   postgresql_user:
     name: "{{ item.name }}"
     password: "{{ item.pass | default('pass')}}"
+    role_attr_flags: "{{ item.role_attr_flags | default('') }}"
     state: present
   sudo: yes
   sudo_user: "{{ pg_user }}"
   with_items: pg_users
   notify: pg reload
+  tags: administration
 
 - name: PostgreSQL | Make sure the PostgreSQL databases are present
   postgresql_db:
     name: "{{ item.name }}"
     owner: "{{ pg_user }}"
+    template: template0
     state: present
   sudo: yes
   sudo_user: "{{ pg_user }}"
   with_items: pg_databases
   notify: pg reload
+  tags: administration
 
 - meta: flush_handlers
 
@@ -35,3 +39,4 @@
   sudo: yes
   sudo_user: "{{ pg_user }}"
   with_items: pg_privileges
+  tags: administration

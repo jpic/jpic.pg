@@ -1,0 +1,3 @@
+{% for user in pg_users %}
+*:*:*:{{ user['name'] }}:{{ user['pass'] }}
+{% endfor %}

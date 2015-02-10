@@ -3,3 +3,7 @@
 - name: pg reload 
   service: name=postgresql state=reloaded enabled=yes
   sudo: yes
+
+- name: pg restart 
+  service: name=postgresql state=restarted enabled=yes
+  sudo: yes

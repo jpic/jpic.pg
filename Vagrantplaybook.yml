@@ -41,27 +41,31 @@
     pg_users:
     - name: testuser
       pass: testpass
+    - name: replicator
+      pass: mypass
+      role_attr_flags: REPLICATION,LOGIN,SUPERUSER
     pg_databases:
-    - name: testdb
+    - name: dbx
     pg_privileges:
     - user: testuser
-      db: testdb
-      priv: all
+      db: dbx
     pg_replication:
-    - name: bdr1testdb
-      auth_method: trust
+    - name: bdr1dbx
+      auth_method: md5
       dsn:
-        dbname: testdb 
-        user: postgres 
+        dbname: dbx 
+        user: replicator
         host: bdr1
+        sslmode: require
       master_for:
       - host: bdr2
         local_dsn:
-          dbname: testdb
+          dbname: dbx
           user: postgres
-    - name: bdr2testdb
-      auth_method: trust
+    - name: bdr2dbx
+      auth_method: md5
       dsn:
-        dbname: testdb 
-        user: postgres 
+        dbname: dbx 
+        user: replicator
         host: bdr2
+        sslmode: require
