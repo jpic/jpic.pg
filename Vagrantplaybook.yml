@@ -15,13 +15,13 @@
   - role: soplakanets.hosts
     save_hosts:
     - name: pg1
-      ip: 172.12.16.101
+      ip: 172.16.16.101
     - name: pg2
-      ip: 172.12.16.102
+      ip: 172.16.16.102
     - name: bdr1
-      ip: 172.12.17.101
+      ip: 172.16.17.101
     - name: bdr2
-      ip: 172.12.17.102
+      ip: 172.16.17.102
 
   - role: jpic.pacman
     pacman_mirrors:
@@ -42,8 +42,8 @@
   - role: .
     pg_bdr_git_src: /vagrant/_bdr
     pg_ips:
-      bdr1: 172.12.17.101
-      bdr2: 172.12.17.102
+      bdr1: 172.16.17.101
+      bdr2: 172.16.17.102
     pg_ssl: 'on'
     pg_ssl_cert_file: /etc/ssl/certs/postgres.crt
     pg_ssl_ca_file: /etc/ssl/certs/postgres.crt

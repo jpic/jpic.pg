@@ -9,7 +9,7 @@ Vagrant.configure(2) do |config|
   (1..2).each do |i|
     config.vm.define vm_name = "pg%d" % i do |config|
       config.vm.hostname = vm_name
-      config.vm.network :private_network, ip: "172.12.16.#{i+100}"
+      config.vm.network :private_network, ip: "172.16.16.#{i+100}"
       config.vm.box = "terrywang/archlinux"
 
       config.vm.provision "ansible" do |ansible|
@@ -28,7 +28,7 @@ Vagrant.configure(2) do |config|
   (1..2).each do |i|
     config.vm.define vm_name = "bdr%d" % i do |config|
       config.vm.hostname = vm_name
-      config.vm.network :private_network, ip: "172.12.17.#{i+100}"
+      config.vm.network :private_network, ip: "172.16.17.#{i+100}"
       config.vm.box = "terrywang/archlinux"
 
       config.vm.provision "ansible" do |ansible|

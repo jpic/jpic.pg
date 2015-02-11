@@ -34,8 +34,8 @@ Example setup with replication::
     pg_bdr_default_apply_delay: 2000
     pg_bdr_log_conflicts_to_table: 'on'
     pg_ips:
-      bdr1: 172.12.17.101
-      bdr2: 172.12.17.102
+      bdr1: 172.16.17.101
+      bdr2: 172.16.17.102
     pg_users:
     - name: testuser
       pass: testpass
