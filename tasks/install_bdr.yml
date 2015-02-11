@@ -62,6 +62,13 @@
   sudo: yes
   when: not pg_bdr_make_install.stat.exists
 
+- stat: path={{ pg_bdr_src }}/.pg_make_c_install2
+  register: pg_bdr_make_c_install2
+
+- shell: make -C contrib install && echo done >> .pg_make_c_install2 chdir='{{ pg_bdr_src }}'
+  sudo: yes
+  when: not pg_bdr_make_c_install2.stat.exists
+
 - set_fact: pg_bdr_extension_src={{ pg_bdr_path }}/bdr_extension
 
 - file: path={{ pg_bdr_extension_src }} state=directory
