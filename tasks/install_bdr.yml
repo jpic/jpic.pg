@@ -85,11 +85,11 @@
   when: not pg_bdr_extension_make.stat.exists
 
 - stat: path={{ pg_bdr_extension_src }}/.pg_make_install
-  register: pg_bdr_extension_make
+  register: pg_bdr_extension_make_install
 
 - shell: make install && echo done >> .pg_make_install chdir={{ pg_bdr_extension_src }}
   sudo: yes
-  when: not pg_make_install.stat.exists
+  when: not pg_bdr_extension_make_install.stat.exists
 
 - file: 
     path: '{{ pg_run_path }}'
