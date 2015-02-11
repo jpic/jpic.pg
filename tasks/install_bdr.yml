@@ -21,8 +21,8 @@
 - shell: patch -Np1 < postgresql-run-socket.patch chdir={{ pg_bdr_src }}
   when: uploaded_patch.changed
 
-- stat: path=/usr/bin/pg_ctl
-  register: pg_ctl_stat
+- stat: path={{ pg_bdr_src }}/.pg_configure
+  register: pg_bdr_configure
 
 - shell: >
     ./configure --prefix=/usr \
@@ -38,22 +38,29 @@
     --with-pam \
     --with-system-tzdata=/usr/share/zoneinfo \
     --enable-nls \
-    --enable-thread-safety
+    --enable-thread-safety && echo done >> .pg_configure
     chdir='{{ pg_bdr_src }}'
-  when: not pg_ctl_stat.stat.exists
+  when: not pg_bdr_configure.stat.exists
 
-- shell: make chdir='{{ pg_bdr_src }}'
-  when: not pg_ctl_stat.stat.exists
+- stat: path={{ pg_bdr_src }}/.pg_make
+  register: pg_bdr_make
 
-- shell: make -C contrib install chdir='{{ pg_bdr_src }}'
+- shell: make && echo done >> .pg_make chdir='{{ pg_bdr_src }}'
+  when: not pg_bdr_make.stat.exists
+
+- stat: path={{ pg_bdr_src }}/.pg_make_c_install
+  register: pg_bdr_make_c_install
+
+- shell: make -C contrib install && echo done >> .pg_make_c_install chdir='{{ pg_bdr_src }}'
   sudo: yes
-  when: not pg_ctl_stat.stat.exists
+  when: not pg_bdr_make_c_install.stat.exists
 
-- shell: make install chdir='{{ pg_bdr_src }}'
-  sudo: yes
+- stat: path={{ pg_bdr_src }}/.pg_make_install
+  register: pg_bdr_make_install
 
-- shell: make -C contrib install chdir='{{ pg_bdr_src }}'
+- shell: make install && echo done >> .pg_make_install chdir='{{ pg_bdr_src }}'
   sudo: yes
+  when: not pg_bdr_make_install.stat.exists
 
 - set_fact: pg_bdr_extension_src={{ pg_bdr_path }}/bdr_extension
 
@@ -65,15 +72,24 @@
 - shell: git clone -b bdr-plugin/stable {{ pg_bdr_git_src }} {{ pg_bdr_extension_src }}
   when: not pg_bdr_extension_configure.stat.exists
 
-- shell: PATH=$HOME/bdr/bin:$PATH ./configure --enable-bdr=yes chdir={{ pg_bdr_extension_src }}
-  when: not pg_ctl_stat.stat.exists
+- stat: path={{ pg_bdr_extension_src }}/.pg_configure
+  register: pg_bdr_extension_configure
 
-- shell: make chdir={{ pg_bdr_extension_src }}
-  when: not pg_ctl_stat.stat.exists
+- shell: PATH=$HOME/bdr/bin:$PATH ./configure --enable-bdr=yes && echo done >> .pg_configure chdir={{ pg_bdr_extension_src }}
+  when: not pg_bdr_extension_configure.stat.exists
 
-- shell: make install chdir={{ pg_bdr_extension_src }}
+- stat: path={{ pg_bdr_extension_src }}/.pg_make
+  register: pg_bdr_extension_make
+
+- shell: make && echo done >> .pg_make chdir={{ pg_bdr_extension_src }}
+  when: not pg_bdr_extension_make.stat.exists
+
+- stat: path={{ pg_bdr_extension_src }}/.pg_make_install
+  register: pg_bdr_extension_make
+
+- shell: make install && echo done >> .pg_make_install chdir={{ pg_bdr_extension_src }}
   sudo: yes
-  when: not pg_ctl_stat.stat.exists
+  when: not pg_make_install.stat.exists
 
 - file: 
     path: '{{ pg_run_path }}'
