@@ -1,0 +1,122 @@
+---
+
+- pacman: name=python2-pip,krb5,libxml2,python2,perl,tcl,openssl,polkit
+  sudo: yes
+
+- file: path={{ pg_bdr_path }} state=directory
+
+- set_fact: pg_bdr_src={{ pg_bdr_path }}/bdr
+
+- file: path={{ pg_bdr_src }} state=directory
+
+- stat: path={{ pg_bdr_src }}/Makefile
+  register: pg_bdr_makefile
+
+- shell: git clone -b bdr-pg/REL9_4_STABLE {{ pg_bdr_git_src }} {{ pg_bdr_src }}
+  when: not pg_bdr_makefile.stat.exists
+
+- copy: src=postgresql-run-socket.patch dest={{ pg_bdr_src }}
+  register: uploaded_patch
+
+- shell: patch -Np1 < postgresql-run-socket.patch chdir={{ pg_bdr_src }}
+  when: uploaded_patch.changed
+
+- stat: path={{ pg_bdr_src }}/.pg_configure
+  register: pg_bdr_configure
+
+- shell: >
+    ./configure --prefix=/usr \
+    --mandir=/usr/share/man \
+    --datadir=/usr/share/postgresql \
+    --sysconfdir=/etc \
+    --with-gssapi \
+    --with-libxml \
+    --with-openssl \
+    --with-perl \
+    --with-python PYTHON=/usr/bin/python2 \
+    --with-tcl \
+    --with-pam \
+    --with-system-tzdata=/usr/share/zoneinfo \
+    --enable-nls \
+    --enable-thread-safety && echo done >> .pg_configure
+    chdir='{{ pg_bdr_src }}'
+  when: not pg_bdr_configure.stat.exists
+
+- stat: path={{ pg_bdr_src }}/.pg_make
+  register: pg_bdr_make
+
+- shell: make && echo done >> .pg_make chdir='{{ pg_bdr_src }}'
+  when: not pg_bdr_make.stat.exists
+
+- stat: path={{ pg_bdr_src }}/.pg_make_c_install
+  register: pg_bdr_make_c_install
+
+- shell: make -C contrib install && echo done >> .pg_make_c_install chdir='{{ pg_bdr_src }}'
+  sudo: yes
+  when: not pg_bdr_make_c_install.stat.exists
+
+- stat: path={{ pg_bdr_src }}/.pg_make_install
+  register: pg_bdr_make_install
+
+- shell: make install && echo done >> .pg_make_install chdir='{{ pg_bdr_src }}'
+  sudo: yes
+  when: not pg_bdr_make_install.stat.exists
+
+- stat: path={{ pg_bdr_src }}/.pg_make_c_install2
+  register: pg_bdr_make_c_install2
+
+- shell: make -C contrib install && echo done >> .pg_make_c_install2 chdir='{{ pg_bdr_src }}'
+  sudo: yes
+  when: not pg_bdr_make_c_install2.stat.exists
+
+- set_fact: pg_bdr_extension_src={{ pg_bdr_path }}/bdr_extension
+
+- file: path={{ pg_bdr_extension_src }} state=directory
+
+- stat: path={{ pg_bdr_extension_src }}/configure
+  register: pg_bdr_extension_configure
+
+- shell: git clone -b bdr-plugin/stable {{ pg_bdr_git_src }} {{ pg_bdr_extension_src }}
+  when: not pg_bdr_extension_configure.stat.exists
+
+- stat: path={{ pg_bdr_extension_src }}/.pg_configure
+  register: pg_bdr_extension_configure
+
+- shell: PATH=$HOME/bdr/bin:$PATH ./configure --enable-bdr=yes && echo done >> .pg_configure chdir={{ pg_bdr_extension_src }}
+  when: not pg_bdr_extension_configure.stat.exists
+
+- stat: path={{ pg_bdr_extension_src }}/.pg_make
+  register: pg_bdr_extension_make
+
+- shell: make && echo done >> .pg_make chdir={{ pg_bdr_extension_src }}
+  when: not pg_bdr_extension_make.stat.exists
+
+- stat: path={{ pg_bdr_extension_src }}/.pg_make_install
+  register: pg_bdr_extension_make_install
+
+- shell: make install && echo done >> .pg_make_install chdir={{ pg_bdr_extension_src }}
+  sudo: yes
+  when: not pg_bdr_extension_make_install.stat.exists
+
+- file: 
+    path: '{{ pg_run_path }}'
+    owner: '{{ pg_user }}'
+    group: '{{ pg_group }}'
+    state: directory
+    mode: 0700
+  sudo: yes
+
+- template: src=postgresql.pam dest=/etc/pam.d/postgresql
+  sudo: yes
+
+- template: src=postgresql.logrotate dest=/etc/logrotate.d/postgresql
+  sudo: yes
+
+- template: src=postgresql.service dest=/etc/systemd/system/postgresql.service
+  sudo: yes
+  register: pg_bdr_postgresql_service
+
+- shell: systemctl daemon-reload
+  when: pg_bdr_postgresql_service.changed
+  sudo: yes
+  notify: pg reload

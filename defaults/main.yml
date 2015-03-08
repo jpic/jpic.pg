@@ -1,5 +1,6 @@
 ---
 pg_master: false
+pg_bdr_build: false
 pg_bdr_path: false
 pg_run_path: /run/postgresql
 pg_log_path: /var/log/postgresql.log

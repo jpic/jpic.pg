@@ -17,8 +17,11 @@
 - include: install.yml
   when: pg_type != 'bdr'
 
+- include: build_bdr.yml
+  when: pg_type == 'bdr' and pg_bdr_build
+
 - include: install_bdr.yml
-  when: pg_type == 'bdr'
+  when: pg_type == 'bdr' and not pg_bdr_build
 
 # Ensure the datadir exists
 - include: initdb.yml
@@ -33,6 +36,3 @@
 
 - include: admin.yml
   when: pg_type != 'slave'
-
-- include: bdr.yml
-  when: pg_type != 'bdr'

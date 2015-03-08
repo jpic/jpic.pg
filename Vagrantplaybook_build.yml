@@ -1,5 +1,15 @@
 ---
 
+- hosts: localhost
+  connection: local
+  tasks:
+  - shell: git clone git://git.postgresql.org/git/2ndquadrant_bdr.git _bdr
+    ignore_errors: yes
+  - shell: git checkout -b bdr-pg/REL9_4_STABLE origin/bdr-pg/REL9_4_STABLE chdir=_bdr
+    ignore_errors: yes
+  - shell: git checkout -b bdr-plugin/stable origin/bdr-plugin/stable  chdir=_bdr
+    ignore_errors: yes
+
 - hosts: pg
   roles:
   - role: soplakanets.hosts
@@ -13,13 +23,9 @@
     - name: bdr2
       ip: 172.16.17.102
 
-  - jpic.gpg
   - role: jpic.pacman
     pacman_mirrors:
     - http://arch.yourlabs.org/
-    pacman_repositories:
-    - name: yourlabs
-      url: http://arch.yourlabs.org/$repo/os/$arch
 
   - role: franklinkim.openssl
     sudo: yes
@@ -34,6 +40,7 @@
       days: 3650
 
   - role: .
+    pg_bdr_build: true
     pg_bdr_git_src: /vagrant/_bdr
     pg_ips:
       bdr1: 172.16.17.101
