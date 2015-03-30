@@ -25,44 +25,76 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 Example Playbook
 ----------------
 
-Example setup with replication::
+To use bdr, you need to add these variables::
 
   - role: jpic.pg
-    pg_bdr_path: /tmp/bdr
     pg_track_commit_timestamp: 'on'
     pg_shared_preload_libraries: 'bdr'
     pg_bdr_default_apply_delay: 2000
     pg_bdr_log_conflicts_to_table: 'on'
+
+Also important, set a hash of hostname/ip for postgresql servers::
+
+  - role: jpic.pg
     pg_ips:
       bdr1: 172.16.17.101
       bdr2: 172.16.17.102
+
+Finnaly, the easiest way to just create a replicated database and user::
+
+  - role: jpic.pg
+    pg_dbclients:
+    - user: john
+      pass: foo
+      replicator_pass: barfoo
+
+The above example is equivalent to::
+
+  - role: jpic.pg
+    pg_dbclients:
+    - user: john
+      db: john
+      pass: foo
+      replicator: john_replication
+      replicator_pass: barfoo
+
+Which, in turn, is the equivalent of::
+
+  - role: jpic.pg
     pg_users:
-    - name: testuser
-      pass: testpass
+    - name: john
+      pass: foo
+    - name: john_replicator
+      pass: barfoo
+      role_attr_flags: REPLICATION,LOGIN,SUPERUSER
     pg_databases:
-    - name: testdb
+    - name: john
     pg_privileges:
-    - user: testuser
-      db: testdb
+    - user: john
+      db: john
       priv: all
     pg_replication:
-    - name: bdr1testdb
-      auth_method: trust
+    - name: bdr1john
+      auth_method: md5
       dsn:
-        dbname: testdb 
-        user: postgres 
+        dbname: john
+        user: john_replication
         host: bdr1
       master_for:
       - host: bdr2
         local_dsn:
-          dbname: testdb
-          user: postgres
-    - name: bdr2testdb
-      auth_method: trust
+          dbname: john
+          user: john_replication
+    - name: bdr2john
+      auth_method: md5
       dsn:
-        dbname: testdb 
-        user: postgres 
+        dbname: john
+        user: john
         host: bdr2
+
+While the above example demonstrates the precision with
+which this role is able to fine-tune, it's a bit boring - use pg_dbclients for
+simple needs.
 
 License
 -------

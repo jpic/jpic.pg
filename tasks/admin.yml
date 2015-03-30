@@ -4,27 +4,27 @@
   service: name=postgresql state=started enabled=yes
   sudo: yes
 
-- name: PostgreSQL | Make sure the PostgreSQL users are present
+- name: pg_users users are present
   postgresql_user:
-    name: "{{ item.name }}"
-    password: "{{ item.pass | default('pass')}}"
+    name: "{{ item.user }}"
+    password: "{{ item.pass }}"
     role_attr_flags: "{{ item.role_attr_flags | default('') }}"
     state: present
   sudo: yes
   sudo_user: "{{ pg_user }}"
-  with_items: pg_users
+  with_items: pg_users + pg_dbclients
   notify: pg reload
   tags: administration
 
 - name: PostgreSQL | Make sure the PostgreSQL databases are present
   postgresql_db:
-    name: "{{ item.name }}"
+    name: "{{ item.get('db', item.get('user', None)) }}"
     owner: "{{ pg_user }}"
     template: template0
     state: present
   sudo: yes
   sudo_user: "{{ pg_user }}"
-  with_items: pg_databases
+  with_items: pg_databases + pg_dbclients
   notify: pg reload
   tags: administration
 
@@ -33,10 +33,24 @@
 - name: PostgreSQL | Update the user privileges
   postgresql_user:
     user: "{{ item.user }}"
-    db: "{{ item.db }}"
+    db: "{{ item.get('db', item.get('user', None)) }}"
     priv: "{{ item.priv | default('ALL') }}"
     state: present
   sudo: yes
   sudo_user: "{{ pg_user }}"
-  with_items: pg_privileges
+  with_items: pg_privileges + pg_dbclients
+  tags: administration
+
+- name: Replication user accounts from pg_dbclients
+  postgresql_user:
+    user: "{{ item.get('replicator', item.user + '_replication') }}"
+    db: "{{ item.get('db', item.user) }}"
+    password: "{{ item.replicator_pass }}"
+    role_attr_flags: REPLICATION,LOGIN,SUPERUSER
+    priv: ALL
+    state: present
+  sudo: yes
+  sudo_user: "{{ pg_user }}"
+  with_items: pg_dbclients
+  when: '"replicator_pass" in item'
   tags: administration

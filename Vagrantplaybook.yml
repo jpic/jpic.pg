@@ -42,14 +42,22 @@
     pg_ssl_cert_file: /etc/ssl/certs/postgres.crt
     pg_ssl_ca_file: /etc/ssl/certs/postgres.crt
     pg_ssl_key_file: /etc/ssl/private/postgres.key
+    pg_dbclients:
+    - user: factor
+      pass: factorpass
+      replicator_pass: dangerouspass
+    - user: other
+      pass: otherpass
+      replicator: replicator
+
     pg_users:
-    - name: testuser
+    - user: testuser
       pass: testpass
-    - name: replicator
+    - user: replicator
       pass: mypass
       role_attr_flags: REPLICATION,LOGIN,SUPERUSER
     pg_databases:
-    - name: dbx
+    - db: dbx
     pg_privileges:
     - user: testuser
       db: dbx
@@ -57,19 +65,19 @@
     - name: bdr1dbx
       auth_method: md5
       dsn:
-        dbname: dbx 
+        db: dbx 
         user: replicator
         host: bdr1
         sslmode: require
       master_for:
       - host: bdr2
         local_dsn:
-          dbname: dbx
+          db: dbx
           user: postgres
     - name: bdr2dbx
       auth_method: md5
       dsn:
-        dbname: dbx 
+        db: dbx 
         user: replicator
         host: bdr2
         sslmode: require

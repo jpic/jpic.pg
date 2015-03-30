@@ -1,3 +1,8 @@
-{% for user in pg_users %}
-*:*:*:{{ user['name'] }}:{{ user['pass'] }}
+{% for user in pg_users + pg_dbclients %}
+*:*:*:{{ user['user'] }}:{{ user['pass'] }}
+{% endfor %}
+{% for dbclient in pg_dbclients %}
+{% if dbclient.get('replicator_pass', '') %}
+*:*:*:{{ dbclient.get('replicator', dbclient.user + '_replication') }}:{{ dbclient['replicator_pass'] }}
+{% endif %}
 {% endfor %}
