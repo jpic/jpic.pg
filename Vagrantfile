@@ -33,7 +33,7 @@ Vagrant.configure(2) do |config|
 
       config.vm.provision "ansible" do |ansible|
           ansible.playbook = "Vagrantplaybook.yml"
-          ansible.verbose = 'vvvv'
+          ansible.verbose = 'v'
           ansible.groups = {
               'pg' => ["bdr1", "bdr2"],
           }
