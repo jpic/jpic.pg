@@ -1,5 +1,13 @@
 ---
 
+
+- pg_bdr_connections: 
+    pg_replications: '{{ pg_replication }}'
+    pg_dbclients: '{{ pg_dbclients }}'
+    pg_ips: '{{ pg_ips }}'
+    for_host: '{{ ansible_hostname }}'
+  register: pg_bdr_connections
+
 # Let's define the kind of setup we are doing
 - set_fact: pg_type=master
   when: ansible_hostname == pg_master and not pg_bdr_path

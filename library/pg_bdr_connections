@@ -1,0 +1,32 @@
+#!/usr/bin/env python2
+from ansible.module_utils.basic import *
+
+
+def main():
+    module = AnsibleModule(
+        argument_spec = dict(
+            pg_dbclients = dict(default=[]),
+            pg_replications = dict(default=[]),
+            pg_ips = dict(default=[]),
+            for_host = dict(),
+        )
+    )
+
+    pg_dbclients = module.params['pg_dbclients']
+    pg_replications = module.params['pg_replications']
+    pg_ips = module.params['pg_ips']
+    for_host = module.params['for_host']
+
+    connections = [r['name'] for r in pg_replications 
+                             if r['dsn']['host'] != for_host]
+
+    for server in pg_ips.keys():
+        if server == for_host:
+            continue
+
+        connections += ['%s%s' % (server, d.get('db', d['user']))
+                            for d in pg_dbclients]
+
+    module.exit_json(changed=False, 
+        bdr_connections=', '.join(connections))
+main()
